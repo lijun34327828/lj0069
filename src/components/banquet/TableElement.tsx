@@ -7,6 +7,26 @@ interface Props {
   onMouseDown: (id: string, e: React.MouseEvent) => void
 }
 
+function estimateTextWidth(text: string, fontSize: number): number {
+  let width = 0
+  for (const ch of text) {
+    if (/[\u4e00-\u9fa5]/.test(ch)) {
+      width += fontSize
+    } else {
+      width += fontSize * 0.55
+    }
+  }
+  return width
+}
+
+function getAdaptiveFontSize(text: string, maxWidth: number, baseSize: number, minSize: number): number {
+  if (!text) return baseSize
+  const baseWidth = estimateTextWidth(text, baseSize)
+  if (baseWidth <= maxWidth) return baseSize
+  const scale = maxWidth / baseWidth
+  return Math.max(minSize, baseSize * scale)
+}
+
 function SeatCircle({ cx, cy, color, occupied }: { cx: number; cy: number; color: string; occupied: boolean }) {
   return (
     <circle
@@ -37,6 +57,12 @@ function RoundTableSvg({ table }: { table: TableItem }) {
     return positions
   }, [seats])
 
+  const displayLabel = label || '圆桌'
+  const labelFontSize = getAdaptiveFontSize(displayLabel, 100, 13, 9)
+  const labelWidth = estimateTextWidth(displayLabel, labelFontSize)
+  const labelBgWidth = labelWidth + 12
+  const labelBgHeight = labelFontSize + 6
+
   return (
     <svg width="160" height="160" viewBox="0 0 160 160" className="overflow-visible">
       <defs>
@@ -53,8 +79,26 @@ function RoundTableSvg({ table }: { table: TableItem }) {
       {seatPositions.map((pos, i) => (
         <SeatCircle key={i} cx={pos.cx} cy={pos.cy} color={color} occupied={true} />
       ))}
-      <text x="80" y="76" textAnchor="middle" fill="white" fontSize="13" fontWeight="600" style={{ fontFamily: 'Georgia, serif' }}>{label || '圆桌'}</text>
-      <text x="80" y="94" textAnchor="middle" fill="rgba(255,255,255,0.6)" fontSize="10">{seats}人</text>
+      <rect
+        x={80 - labelBgWidth / 2}
+        y={72 - labelBgHeight / 2}
+        width={labelBgWidth}
+        height={labelBgHeight}
+        rx="4"
+        fill="rgba(0, 0, 0, 0.55)"
+      />
+      <text
+        x="80"
+        y="76"
+        textAnchor="middle"
+        fill="white"
+        fontSize={labelFontSize}
+        fontWeight="600"
+        style={{ fontFamily: 'Georgia, serif' }}
+      >
+        {displayLabel}
+      </text>
+      <text x="80" y="94" textAnchor="middle" fill="rgba(255,255,255,0.7)" fontSize="10">{seats}人</text>
     </svg>
   )
 }
@@ -84,6 +128,12 @@ function LongTableSvg({ table }: { table: TableItem }) {
     return positions
   }, [seats, halfSeats])
 
+  const displayLabel = label || '长条桌'
+  const labelFontSize = getAdaptiveFontSize(displayLabel, 220, 12, 8)
+  const labelWidth = estimateTextWidth(displayLabel, labelFontSize)
+  const labelBgWidth = labelWidth + 12
+  const labelBgHeight = labelFontSize + 6
+
   return (
     <svg width="280" height="90" viewBox="0 0 280 90" className="overflow-visible">
       <defs>
@@ -102,8 +152,26 @@ function LongTableSvg({ table }: { table: TableItem }) {
       {bottomSeats.map((pos, i) => (
         <SeatCircle key={`b${i}`} cx={pos.cx} cy={pos.cy} color={color} occupied={true} />
       ))}
-      <text x="140" y="50" textAnchor="middle" fill="white" fontSize="12" fontWeight="600" style={{ fontFamily: 'Georgia, serif' }}>{label || '长条桌'}</text>
-      <text x="140" y="65" textAnchor="middle" fill="rgba(255,255,255,0.6)" fontSize="9">{seats}人</text>
+      <rect
+        x={140 - labelBgWidth / 2}
+        y={44 - labelBgHeight / 2}
+        width={labelBgWidth}
+        height={labelBgHeight}
+        rx="4"
+        fill="rgba(0, 0, 0, 0.55)"
+      />
+      <text
+        x="140"
+        y="48"
+        textAnchor="middle"
+        fill="white"
+        fontSize={labelFontSize}
+        fontWeight="600"
+        style={{ fontFamily: 'Georgia, serif' }}
+      >
+        {displayLabel}
+      </text>
+      <text x="140" y="65" textAnchor="middle" fill="rgba(255,255,255,0.7)" fontSize="9">{seats}人</text>
     </svg>
   )
 }
@@ -133,6 +201,12 @@ function PlatformSvg({ table }: { table: TableItem }) {
     return positions
   }, [seats, halfSeats])
 
+  const displayLabel = label || '主宾台'
+  const labelFontSize = getAdaptiveFontSize(displayLabel, 340, 15, 10)
+  const labelWidth = estimateTextWidth(displayLabel, labelFontSize)
+  const labelBgWidth = labelWidth + 12
+  const labelBgHeight = labelFontSize + 6
+
   return (
     <svg width="400" height="100" viewBox="0 0 400 100" className="overflow-visible">
       <defs>
@@ -152,8 +226,26 @@ function PlatformSvg({ table }: { table: TableItem }) {
       {bottomSeats.map((pos, i) => (
         <SeatCircle key={`b${i}`} cx={pos.cx} cy={pos.cy} color="#ffd700" occupied={true} />
       ))}
-      <text x="200" y="54" textAnchor="middle" fill="#ffd700" fontSize="15" fontWeight="700" style={{ fontFamily: 'Georgia, serif', letterSpacing: '0.15em' }}>{label || '主宾台'}</text>
-      <text x="200" y="72" textAnchor="middle" fill="rgba(255,215,0,0.6)" fontSize="10">{seats}人</text>
+      <rect
+        x={200 - labelBgWidth / 2}
+        y={49 - labelBgHeight / 2}
+        width={labelBgWidth}
+        height={labelBgHeight}
+        rx="4"
+        fill="rgba(0, 0, 0, 0.55)"
+      />
+      <text
+        x="200"
+        y="53"
+        textAnchor="middle"
+        fill="#ffd700"
+        fontSize={labelFontSize}
+        fontWeight="700"
+        style={{ fontFamily: 'Georgia, serif', letterSpacing: '0.15em' }}
+      >
+        {displayLabel}
+      </text>
+      <text x="200" y="72" textAnchor="middle" fill="rgba(255,215,0,0.7)" fontSize="10">{seats}人</text>
     </svg>
   )
 }
