@@ -44,6 +44,7 @@ interface BanquetState {
   setCanvasOffset: (offset: { x: number; y: number }) => void
   loadDinnerTemplate: () => void
   loadCocktailTemplate: () => void
+  loadLayout: (payload: { tables: TableItem[]; guestGroups: GuestGroup[]; template: TemplateType }) => void
 }
 
 let nextId = 1
@@ -241,6 +242,15 @@ export const useBanquetStore = create<BanquetState>((set, get) => ({
       selectedTableId: null,
       canvasOffset: { x: 0, y: 0 },
       canvasZoom: 1,
+    })
+  },
+
+  loadLayout: (payload) => {
+    set({
+      tables: payload.tables,
+      guestGroups: payload.guestGroups,
+      template: payload.template,
+      selectedTableId: null,
     })
   },
 }))
